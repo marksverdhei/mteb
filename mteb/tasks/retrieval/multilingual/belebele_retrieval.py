@@ -213,7 +213,17 @@ class BelebeleRetrieval(AbsTaskRetrieval):
         if self.data_loaded:
             return
 
-        self.dataset = load_dataset(**self.metadata.dataset)
+        # Collect all unique language codes needed for the filtered subsets
+        needed_langs = set()
+        for lang_pair in self.hf_subsets:
+            languages = self.metadata.eval_langs[lang_pair]
+            needed_langs.add(languages[0].replace("-", "_"))
+            needed_langs.add(languages[1].replace("-", "_"))
+
+        # Load only the needed language splits
+        needed_langs_list = sorted(needed_langs)
+        datasets_list = load_dataset(split=needed_langs_list, **self.metadata.dataset)
+        self.dataset = dict(zip(needed_langs_list, datasets_list))
 
         self.queries = {lang_pair: {_EVAL_SPLIT: {}} for lang_pair in self.hf_subsets}
         self.corpus = {lang_pair: {_EVAL_SPLIT: {}} for lang_pair in self.hf_subsets}

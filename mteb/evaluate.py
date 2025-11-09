@@ -373,8 +373,8 @@ def evaluate(
             )
             results.extend(_res.task_results)
         return ModelResult(
-            model_name=_res.model_name,
-            model_revision=_res.model_revision,
+            model_name=model_name,
+            model_revision=model_revision,
             task_results=results,
         )
 
